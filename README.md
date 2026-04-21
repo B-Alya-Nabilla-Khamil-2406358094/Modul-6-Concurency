@@ -16,3 +16,20 @@ Hasil `collect()` mengumpulkan semua baris menjadi sebuah `Vec<String>` yang
 merepresentasikan HTTP request headers. Ketika browser mengakses
 `127.0.0.1:7878`, server mencetak seluruh HTTP request headers ke console,
 yang memperlihatkan method GET, path, dan informasi browser.
+
+## Commit 2 Reflection Notes
+
+Pada commit ini, server sekarang dapat mengembalikan konten HTML ke browser.
+Fungsi `fs::read_to_string("hello.html")` digunakan untuk membaca file HTML
+dari filesystem dan mengubahnya menjadi String.
+
+Response HTTP yang valid harus memiliki format: status line, diikuti headers,
+diikuti baris kosong, diikuti body. Header `Content-Length` wajib disertakan
+agar browser tahu panjang konten yang dikirim. Method `stream.write_all()`
+digunakan untuk mengirimkan byte response ke browser melalui TCP stream.
+
+`format!` macro digunakan untuk membuat string response dengan interpolasi
+variabel. `\r\n` adalah CRLF (Carriage Return Line Feed) yang merupakan
+standar line ending dalam protokol HTTP sesuai RFC 7230.
+
+![Commit 2 screen capture](assets/images/commit2.png)
