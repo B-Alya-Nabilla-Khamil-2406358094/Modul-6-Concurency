@@ -53,3 +53,19 @@ Request ke path lain seperti `/bad` atau `/sleep` akan mendapatkan response
 404 NOT FOUND dengan halaman `404.html`.
 
 ![Commit 3 screen capture](assets/images/commit3.png)
+
+## Commit 4 Reflection Notes
+
+Pada commit ini, saya mensimulasikan slow request dengan menambahkan endpoint
+`/sleep` yang akan membuat server tidur selama 10 detik sebelum merespons.
+
+Ketika membuka dua tab browser, satu ke `/sleep` dan satu ke `/`, terlihat
+bahwa request ke `/` harus menunggu hingga request `/sleep` selesai. Ini
+membuktikan kelemahan single-threaded server: server hanya bisa menangani
+satu request pada satu waktu secara berurutan (sequential).
+
+Jika banyak user mengakses server secara bersamaan dan ada satu request yang
+lambat, semua request lainnya akan ter-block dan harus mengantri. Ini adalah
+masalah yang disebut "head-of-line blocking". Solusinya adalah menggunakan
+multi-threading agar setiap request dapat diproses secara independen oleh
+thread yang berbeda, sehingga slow request tidak memblokir request lainnya.
