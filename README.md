@@ -69,3 +69,24 @@ lambat, semua request lainnya akan ter-block dan harus mengantri. Ini adalah
 masalah yang disebut "head-of-line blocking". Solusinya adalah menggunakan
 multi-threading agar setiap request dapat diproses secara independen oleh
 thread yang berbeda, sehingga slow request tidak memblokir request lainnya.
+
+## Commit 5 Reflection Notes
+
+Pada commit ini, server diubah menjadi multithreaded menggunakan ThreadPool
+pattern. ThreadPool mengelola sejumlah Worker threads yang siap menerima dan
+memproses jobs (request) secara concurrent.
+
+Cara kerja ThreadPool: saat `ThreadPool::new(4)` dipanggil, dibuat 4 Worker
+threads yang langsung berjalan dan menunggu job dari channel. Setiap kali
+`pool.execute(closure)` dipanggil, closure tersebut dikirim melalui `mpsc`
+channel ke salah satu Worker yang sedang idle.
+
+`Arc<Mutex<Receiver>>` digunakan agar receiver channel dapat di-share secara
+aman ke multiple Worker threads. `Arc` (Atomic Reference Counting) memungkinkan
+multiple ownership antar thread, sedangkan `Mutex` memastikan hanya satu Worker
+yang mengambil job dari channel pada satu waktu, mencegah race condition.
+
+Sekarang request ke `/sleep` tidak lagi memblokir request lain karena
+masing-masing request ditangani oleh thread yang berbeda dari pool. Dengan 4
+worker threads, server bisa menangani hingga 4 request secara bersamaan,
+meningkatkan throughput secara signifikan dibandingkan single-threaded server.
