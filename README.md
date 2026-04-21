@@ -90,3 +90,25 @@ Sekarang request ke `/sleep` tidak lagi memblokir request lain karena
 masing-masing request ditangani oleh thread yang berbeda dari pool. Dengan 4
 worker threads, server bisa menangani hingga 4 request secara bersamaan,
 meningkatkan throughput secara signifikan dibandingkan single-threaded server.
+
+## Commit Bonus Reflection Notes
+
+Pada commit bonus ini, saya menambahkan function `build` sebagai alternatif
+dari `new` untuk membuat `ThreadPool`. Perbedaan utama antara keduanya adalah
+cara penanganan error.
+
+Function `new` menggunakan `assert!(size > 0)` yang akan langsung menyebabkan
+program **panic** (crash) jika size adalah 0. Panic adalah unrecoverable error
+di Rust, artinya program berhenti secara tiba-tiba tanpa kesempatan untuk
+menangani error tersebut.
+
+Sebaliknya, function `build` mengembalikan `Result<ThreadPool, PoolCreationError>`.
+Ini mengikuti prinsip Rust yang lebih idiomatik untuk recoverable errors.
+Pemanggil fungsi `build` dapat menggunakan pattern matching atau `?` operator
+untuk menangani kasus error dengan graceful, misalnya menampilkan pesan error
+yang informatif atau mencoba konfigurasi alternatif, tanpa menyebabkan program
+crash.
+
+`build` lebih direkomendasikan untuk production code karena memberikan kontrol
+error handling kepada pemanggil, sementara `new` lebih sederhana namun
+berbahaya jika input tidak divalidasi sebelumnya.
