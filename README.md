@@ -33,3 +33,23 @@ variabel. `\r\n` adalah CRLF (Carriage Return Line Feed) yang merupakan
 standar line ending dalam protokol HTTP sesuai RFC 7230.
 
 ![Commit 2 screen capture](assets/images/commit2.png)
+
+## Commit 3 Reflection Notes
+
+Pada commit ini, server sekarang dapat melakukan validasi request dan
+memberikan response yang berbeda tergantung path yang diminta. Hanya request
+`GET / HTTP/1.1` yang akan mendapatkan response 200 OK dengan halaman
+`hello.html`.
+
+Refactoring dilakukan dengan menggunakan tuple destructuring `let (status_line,
+filename) = if ... else ...` untuk menghindari duplikasi kode. Sebelumnya,
+kedua blok if dan else masing-masing membaca file dan menulis response secara
+terpisah. Setelah refactoring, perbedaan antara kedua kasus (status line dan
+nama file) dipisahkan ke dalam if-else, sementara logika membaca file dan
+menulis response hanya ditulis sekali. Ini membuat kode lebih maintainable
+karena perubahan pada logika response cukup dilakukan di satu tempat.
+
+Request ke path lain seperti `/bad` atau `/sleep` akan mendapatkan response
+404 NOT FOUND dengan halaman `404.html`.
+
+![Commit 3 screen capture](assets/images/commit3.png)
